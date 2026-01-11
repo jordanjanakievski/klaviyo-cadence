@@ -36,11 +36,17 @@ export class ReplenishmentService {
         if (!profileId) return defaultDays;
 
         try {
-            const metrics = await this.metricsApi.getMetrics({
-                filter: `equals(attributes.name,"Placed Order")`,
-            });
-            const metricId = metrics.body.data[0]?.id;
-            if (!metricId) return defaultDays;
+            const metricsResponse = await this.metricsApi.getMetrics({});
+            const placeOrderMetric = metricsResponse.body.data.find(
+                (m) => m.attributes.name === "Placed Order",
+            );
+
+            const metricId = placeOrderMetric?.id;
+
+            if (!metricId) {
+                console.warn("'Placed Order' metric not found in account.");
+                return defaultDays;
+            }
 
             // Fetch recent 'Placed Order' events for this profile
             // Used to calculate average interval
@@ -79,13 +85,24 @@ export class ReplenishmentService {
         email: string,
     ): Promise<Date | null> {
         try {
-            const items = await this.catalogsApi.getCatalogItems({
-                filter: `equals(external_id,"${productId}")`,
-            });
-            const item = items.body.data[0];
+            const catalogItemId = `$custom:::$default:::${productId}`;
+
+            let item;
+            try {
+                const response =
+                    await this.catalogsApi.getCatalogItem(catalogItemId);
+                item = response.body.data;
+            } catch (e: any) {
+                if (e.status === 404) {
+                    console.warn(
+                        `Product ${productId} (ID: ${catalogItemId}) not found.`,
+                    );
+                    return null;
+                }
+                throw e;
+            }
 
             if (!item) {
-                console.warn(`Product ${productId} not found in catalog.`);
                 return null;
             }
 

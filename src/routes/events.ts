@@ -3,9 +3,9 @@ import { ApiKeySession } from "klaviyo-api";
 import { ReplenishmentService } from "../services/replenishmentService";
 
 const router = express.Router();
-const API_KEY = process.env.KLAVIYO_KEY;
 
 router.post("/placed-order", async (req: Request, res: Response) => {
+    const API_KEY = process.env.KLAVIYO_KEY;
     const { email, items } = req.body;
 
     if (!API_KEY) {
