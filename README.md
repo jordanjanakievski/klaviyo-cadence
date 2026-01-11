@@ -1,8 +1,8 @@
-# Financial Dogbone
-
-The "dogbone", a vital part of a mountaineering quickdraw, is the connection between two critical points. In this project, connecting Klaviyo and Stripe, the dogbone will bridge the data gap and bring financial transparency to the customer profiles for Klaviyo users.
+# Klaviyo Cadence
 
 ## Problem Statement
+
+Timing is everything when it comes to marketing communications. Making sure emails and messages reach customers at the optimal time can significantly improve engagement. This is very important when selling consumable products that need to be replenished regularly, but might not always stick to a strict schedule. We want to avoid premature outreach, but also ensure we keep up with customers with higher purchase frequency. Cadence seeks to bring intelligent timing to Klaviyo's customer's marketing efforts.
 
 ## Solution Overview
 
@@ -14,8 +14,8 @@ The "dogbone", a vital part of a mountaineering quickdraw, is the connection bet
 
 ```bash
 # Clone the repository
-git clone https://github.com/jordanjanakievski/klaviyo-stripe-dogbone.git
-cd klaviyo-stripe-dogbone
+git clone https://github.com/jordanjanakievski/klaviyo-cadence.git
+cd klaviyo-cadence
 npm install
 
 # Create a .env file based on the .env.example
