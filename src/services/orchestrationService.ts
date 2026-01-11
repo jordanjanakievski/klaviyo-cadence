@@ -17,32 +17,31 @@ export class OrchestrationService {
         try {
             console.log(`Step 1: Creating Segment '${segmentName}'...`);
 
-            // 1. Create Segment
-            // We use a safe "Email contains @" condition to ensure segment creation succeeds.
-            // In a real production scenario, you would fine-tune the Profile Property condition.
+            const segmentDefinition = {
+                conditionGroups: [
+                    {
+                        operator: "and",
+                        conditions: [
+                            {
+                                type: "profile-property",
+                                property: "email",
+                                filter: {
+                                    type: "string",
+                                    operator: "contains",
+                                    value: "@",
+                                },
+                            },
+                        ],
+                    },
+                ],
+            };
+
             const segmentPayload = {
                 data: {
                     type: "segment",
                     attributes: {
                         name: segmentName,
-                        definition: {
-                            conditionGroups: [
-                                {
-                                    operator: "and",
-                                    conditions: [
-                                        {
-                                            type: "profile-property",
-                                            property: "email",
-                                            filter: {
-                                                type: "string",
-                                                operator: "contains",
-                                                value: "example.com",
-                                            },
-                                        },
-                                    ],
-                                },
-                            ],
-                        },
+                        definition: segmentDefinition,
                     },
                 },
             };
@@ -84,8 +83,8 @@ export class OrchestrationService {
                                                 subject: `Time to restock your ${productId}!`,
                                                 from_email:
                                                     "donotreply@example.com",
-                                                from_label:
-                                                    "Example Store",
+                                                from_label: "Example Store",
+                                            },
                                         },
                                     },
                                 },
@@ -113,24 +112,21 @@ export class OrchestrationService {
                 throw new Error("Campaign created but no message found.");
             }
 
-            // Step 2.5: Update Message Content (Subject, From Email, etc.)
-            // The campaign-level attributes might not propagate to the message automatically in all contexts.
-            console.log(`Step 2.5: Updating Message Content for ${messageId}...`);
             await this.campaignsApi.updateCampaignMessage(messageId, {
                 data: {
-                    type: 'campaign-message',
+                    type: "campaign-message",
                     id: messageId,
                     attributes: {
                         definition: {
-                            channel: 'email', // Required field
+                            channel: "email",
                             content: {
                                 subject: `Time to restock your ${productId}!`,
                                 from_email: "replenishment@example.com",
-                                from_label: "Klaviyo Replenishment"
-                            }
-                        }
-                    }
-                }
+                                from_label: "Klaviyo Replenishment",
+                            },
+                        },
+                    },
+                },
             } as any);
 
             const templateId = process.env.KLAVIYO_TEMPLATE_ID;
@@ -146,16 +142,15 @@ export class OrchestrationService {
                         template: {
                             data: {
                                 type: "template",
-                                id: templateId
-                            }
-                        }
-                    }
-                }
+                                id: templateId,
+                            },
+                        },
+                    },
+                },
             };
 
-            // Using the specialized endpoint for template assignment
             await this.campaignsApi.createCampaignMessageAssignTemplate(
-                assignTemplatePayload as any
+                assignTemplatePayload as any,
             );
             console.log(
                 `-> Template ${templateId} assigned to Message ${messageId}`,
