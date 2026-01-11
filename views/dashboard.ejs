@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant Command Center</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .btn:hover { background-color: #0056b3; }
+        .success { color: green; font-weight: bold; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Merchant Command Center</h1>
+
+    <% if (successMessage) { %>
+        <div class="success"><%= successMessage %></div>
+    <% } %>
+
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Upcoming Replenishments (Next 60 Days)</h2>
+        <div style="display: flex; gap: 10px; align-items: center;">
+            <select id="productFilter" onchange="filterTable()" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
+                <option value="all">Select a Product...</option>
+                <option value="VS-001">Vitamin Serum (VS-001)</option>
+                <option value="HC-002">Hydrating Cleanser (HC-002)</option>
+            </select>
+            <button onclick="window.location.reload()" class="btn" style="background-color: #6c757d;">Refresh Data</button>
+            <form action="/dashboard/launch" method="POST" style="margin: 0;">
+                <input type="hidden" name="product_id" id="launchProductId" value="">
+                <button type="submit" id="launchBtn" class="btn" disabled style="opacity: 0.5; cursor: not-allowed;">Launch Restock Campaign</button>
+            </form>
+        </div>
+    </div>
+
+    <table id="profilesTable">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>First Name</th>
+                <th>Product Name</th>
+                <th>Predicted Restock Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% if (profiles.length === 0) { %>
+                <tr><td colspan="4">No upcoming replenishments found.</td></tr>
+            <% } else { %>
+                <% profiles.forEach(function(profile) { %>
+                    <tr data-product="<%= profile.product_id %>" data-product-name="<%= profile.product_name %>">
+                        <td><%= profile.email %></td>
+                        <td><%= profile.first_name %></td>
+                        <td><%= profile.product_name %> (<%= profile.product_id %>)</td>
+                        <td><%= profile.predicted_date %></td>
+                    </tr>
+                <% }); %>
+            <% } %>
+        </tbody>
+    </table>
+
+    <script>
+        function filterTable() {
+            const filter = document.getElementById('productFilter').value;
+            const table = document.getElementById('profilesTable');
+            const rows = table.getElementsByTagName('tr');
+
+            // Update Launch Button State
+            const launchBtn = document.getElementById('launchBtn');
+            const launchInput = document.getElementById('launchProductId');
+
+            if (filter !== 'all') {
+                launchBtn.disabled = false;
+                launchBtn.style.opacity = '1';
+                launchBtn.style.cursor = 'pointer';
+                launchInput.value = filter;
+            } else {
+                launchBtn.disabled = true;
+                launchBtn.style.opacity = '0.5';
+                launchBtn.style.cursor = 'not-allowed';
+                launchInput.value = '';
+            }
+
+            for (let i = 1; i < rows.length; i++) { // Start at 1 to skip header
+                const row = rows[i];
+                const productId = row.getAttribute('data-product');
+
+                // Show row if filter is 'all' OR if row matches selected ID
+                if (filter === 'all' || productId === filter) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            }
+        }
+
+        // Initialize state on load
+        filterTable();
+    </script>
+</body>
+</html>

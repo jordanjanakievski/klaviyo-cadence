@@ -144,15 +144,15 @@ export class ReplenishmentService {
             return;
         }
 
+        const dateStr = date.toISOString().split("T")[0];
+
         try {
             await this.eventsApi.createEvent({
                 data: {
                     type: "event",
                     attributes: {
                         properties: {
-                            replenishment_date: date
-                                .toISOString()
-                                .split("T")[0],
+                            replenishment_date: dateStr,
                             product_id: productId,
                         },
                         metric: {
@@ -176,8 +176,31 @@ export class ReplenishmentService {
             console.log(
                 `Triggered 'Replenishment Due Soon' for ${email} on ${date.toISOString()}`,
             );
-        } catch (error) {
-            console.error("Error triggering event:", error);
+
+            const propertyKey = `replenishment_date_${productId}`;
+
+            await this.profilesApi.updateProfile(profileId, {
+                data: {
+                    type: "profile",
+                    id: profileId,
+                    attributes: {
+                        properties: {
+                            [propertyKey]: dateStr,
+                        },
+                    },
+                },
+            });
+            console.log(
+                `Updated profile ${profileId} with property ${propertyKey}=${dateStr}`,
+            );
+        } catch (error: any) {
+            console.error("Error triggering event or updating profile:", error);
+            if (error.response?.data?.errors) {
+                console.error(
+                    "Klaviyo API Error (Event/Profile):",
+                    error.response.data.errors,
+                );
+            }
         }
     }
 }

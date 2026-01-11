@@ -2,7 +2,7 @@
 
 ## Problem Statement
 
-Timing is everything when it comes to marketing communications. Making sure emails and messages reach customers at the optimal time can significantly improve engagement. This is very important when selling consumable products that need to be replenished regularly, but might not always stick to a strict schedule. We want to avoid premature outreach, but also ensure we keep up with customers with higher purchase frequency. Cadence seeks to bring intelligent timing to Klaviyo's customer's marketing efforts.
+Timing is everything when it comes to marketing communications. Making sure emails and messages reach customers at the optimal time can significantly improve engagement. This is very important when selling consumable products that need to be replenished regularly, but might not always stick to a strict schedule. We want to avoid premature outreach, but also ensure we keep up with customers with higher purchase frequency. Cadence seeks to bring intelligent timing to Klaviyo's customer's marketing efforts, expanding upon Klaviyo's existing customer retention through Flow.
 
 ## Solution Overview
 
