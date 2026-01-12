@@ -1,10 +1,6 @@
 # Klaviyo Cadence
 
-### Winter Challenge
-
-## Project Title
-
-**Klaviyo Cadence**
+### Klayvio Winter Challenge
 
 ## Problem Statement
 
@@ -36,6 +32,8 @@ The project is built as a modular **Node.js** application using **TypeScript** a
     3.  Store: The predicted date is written to the Klaviyo Profile.
     4.  Visualize: The `DashboardService` queries these profiles to show a demand forecast in the next 2 month window.
     5.  Act: The `OrchestrationService` creates a dynamic Segment and sends a Campaign via the Klaviyo API.
+
+I took advantage of AI tools to accelerate development and understand the Klaviyo API. They were very beneficial for boilerplate code, the seeding script, and quickly testing out a thought process before committing to a specific implementation.
 
 ## Klaviyo API / SDK / MCP Usage
 
