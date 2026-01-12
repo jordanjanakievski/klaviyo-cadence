@@ -130,3 +130,4 @@ npm test
 - Advanced Analytics: Implement more sophisticated algorithms for burn rate calculation, considering seasonality or multi-product usage.
 - Campaign Customization: Allow more dynamic and custom input for the campaign content instead of a simple template ID for all campaigns.
 - Webhook Integration: Set up real-time webhooks to trigger replenishment calculations immediately after an order is placed without needing to seed data.
+- Improved Data Handling: Implement pagination and rate-limiting handling for large datasets when querying events and profiles.

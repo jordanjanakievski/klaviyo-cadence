@@ -9,8 +9,8 @@
         table { width: 100%; border-collapse: collapse; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
-        .btn { padding: 10px 20px; background-color: #007bff; color: white; border: none; cursor: pointer; }
-        .btn:hover { background-color: #0056b3; }
+        .btn { padding: 10px 20px; background-color: #E65C4A; color: white; border: none; cursor: pointer; }
+        .btn:hover { background-color: #E76F60; }
         .success { color: green; font-weight: bold; margin-bottom: 20px; }
     </style>
 </head>
@@ -26,8 +26,9 @@
         <div style="display: flex; gap: 10px; align-items: center;">
             <select id="productFilter" onchange="filterTable()" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
                 <option value="all">Select a Product...</option>
-                <option value="VS-001">Vitamin Serum (VS-001)</option>
-                <option value="HC-002">Hydrating Cleanser (HC-002)</option>
+                <% products.forEach(function(product) { %>
+                    <option value="<%= product.id %>"><%= product.name %> (<%= product.id %>)</option>
+                <% }); %>
             </select>
             <button onclick="window.location.reload()" class="btn" style="background-color: #6c757d;">Refresh Data</button>
             <form action="/dashboard/launch" method="POST" style="margin: 0;">

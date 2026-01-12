@@ -16,9 +16,11 @@ router.get("/", async (req: Request, res: Response) => {
 
     // Fetch demand for next 2 months
     const profiles = await dashboardService.fetchUpcomingDemand(60);
+    const products = await dashboardService.getAllProducts();
 
     res.render("dashboard", {
         profiles,
+        products,
         successMessage: req.query.success,
     });
 });

@@ -17,6 +17,22 @@ export class DashboardService {
         this.catalogsApi = new CatalogsApi(session);
     }
 
+    async getAllProducts(): Promise<{ id: string; name: string }[]> {
+        try {
+            const response = await this.catalogsApi.getCatalogItems({
+                pageCursor: undefined, // Add pagination loop if needed for > 100 items
+            });
+
+            return response.body.data.map((item) => ({
+                id: item.attributes.externalId || item.id,
+                name: item.attributes.title || "Unknown Product",
+            }));
+        } catch (error) {
+            console.error("Error fetching products from catalog:", error);
+            return [];
+        }
+    }
+
     async fetchUpcomingDemand(daysAhead: number): Promise<DashboardProfile[]> {
         const today = new Date();
         const futureDate = new Date();
