@@ -15,8 +15,6 @@ export class OrchestrationService {
         const segmentName = `Restock_${productId}_${today}_${timestamp}`;
 
         try {
-            console.log(`Step 1: Creating Segment '${segmentName}'...`);
-
             const segmentDefinition = {
                 conditionGroups: [
                     {
@@ -28,7 +26,7 @@ export class OrchestrationService {
                                 filter: {
                                     type: "string",
                                     operator: "contains",
-                                    value: "@",
+                                    value: "example.com",
                                 },
                             },
                         ],
@@ -50,11 +48,7 @@ export class OrchestrationService {
                 segmentPayload as any,
             );
             const segmentId = segmentResponse.body.data.id;
-            console.log(`-> Segment Created: ${segmentId}`);
 
-            console.log(
-                `Step 2: Creating Campaign for Segment ${segmentId}...`,
-            );
             const campaignPayload = {
                 data: {
                     type: "campaign",
@@ -98,11 +92,6 @@ export class OrchestrationService {
                 campaignPayload as any,
             );
             const campaignId = campaignResponse.body.data.id;
-            console.log(`-> Campaign Created: ${campaignId}`);
-
-            console.log(
-                `Step 3: Assigning Template to Campaign ${campaignId}...`,
-            );
 
             const messagesResponse =
                 await this.campaignsApi.getCampaignCampaignMessages(campaignId);
@@ -152,13 +141,7 @@ export class OrchestrationService {
             await this.campaignsApi.createCampaignMessageAssignTemplate(
                 assignTemplatePayload as any,
             );
-            console.log(
-                `-> Template ${templateId} assigned to Message ${messageId}`,
-            );
 
-            console.log(
-                `Step 4: Scheduling Send for Campaign ${campaignId}...`,
-            );
             const sendJobPayload = {
                 data: {
                     type: "campaign-send-job",
@@ -169,8 +152,8 @@ export class OrchestrationService {
             await this.campaignsApi.createCampaignSendJob(
                 sendJobPayload as any,
             );
-            console.log(`-> Send Job Initiated!`);
 
+            console.log("Campaign created");
             return campaignId;
         } catch (error: any) {
             console.error("Orchestration Failed:", error.message);

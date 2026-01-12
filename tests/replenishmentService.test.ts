@@ -58,7 +58,14 @@ describe("ReplenishmentService", () => {
                 body: { data: [{ id: "profile-123" }] },
             } as any);
             mockMetricsApi.getMetrics.mockResolvedValue({
-                body: { data: [{ id: "metric-123" }] },
+                body: {
+                    data: [
+                        {
+                            id: "metric-123",
+                            attributes: { name: "Placed Order" },
+                        },
+                    ],
+                },
             } as any);
 
             const now = new Date().getTime();
@@ -96,10 +103,8 @@ describe("ReplenishmentService", () => {
     });
 
     describe("calculateNextReplenishment", () => {
-        it("should return null if product not found", async () => {
-            mockCatalogsApi.getCatalogItems.mockResolvedValue({
-                body: { data: [] },
-            } as any);
+        it("should return null if product not found (404)", async () => {
+            mockCatalogsApi.getCatalogItem.mockRejectedValue({ status: 404 });
 
             const date = await service.calculateNextReplenishment(
                 "prod-1",
@@ -112,8 +117,16 @@ describe("ReplenishmentService", () => {
             mockProfilesApi.getProfiles.mockResolvedValue({
                 body: { data: [{ id: "profile-123" }] },
             } as any);
+
             mockMetricsApi.getMetrics.mockResolvedValue({
-                body: { data: [{ id: "metric-123" }] },
+                body: {
+                    data: [
+                        {
+                            id: "metric-123",
+                            attributes: { name: "Placed Order" },
+                        },
+                    ],
+                },
             } as any);
 
             const now = new Date().getTime();
@@ -144,15 +157,13 @@ describe("ReplenishmentService", () => {
                 },
             } as any);
 
-            mockCatalogsApi.getCatalogItems.mockResolvedValue({
+            mockCatalogsApi.getCatalogItem.mockResolvedValue({
                 body: {
-                    data: [
-                        {
-                            attributes: {
-                                custom_metadata: { expected_lifetime_days: 60 },
-                            },
+                    data: {
+                        attributes: {
+                            custom_metadata: { expected_lifetime_days: 60 },
                         },
-                    ],
+                    },
                 },
             } as any);
 
@@ -169,7 +180,6 @@ describe("ReplenishmentService", () => {
             const diff = Math.abs(
                 resultDate!.getTime() - expectedDate.getTime(),
             );
-            // Check difference is less than 1 day
             expect(diff).toBeLessThan(1000 * 60 * 60 * 24);
         });
 
@@ -178,21 +188,26 @@ describe("ReplenishmentService", () => {
                 body: { data: [{ id: "new-user" }] },
             } as any);
             mockMetricsApi.getMetrics.mockResolvedValue({
-                body: { data: [{ id: "metric-123" }] },
+                body: {
+                    data: [
+                        {
+                            id: "metric-123",
+                            attributes: { name: "Placed Order" },
+                        },
+                    ],
+                },
             } as any);
             mockEventsApi.getEvents.mockResolvedValue({
                 body: { data: [] },
             } as any);
 
-            mockCatalogsApi.getCatalogItems.mockResolvedValue({
+            mockCatalogsApi.getCatalogItem.mockResolvedValue({
                 body: {
-                    data: [
-                        {
-                            attributes: {
-                                custom_metadata: { expected_lifetime_days: 60 },
-                            },
+                    data: {
+                        attributes: {
+                            custom_metadata: { expected_lifetime_days: 60 },
                         },
-                    ],
+                    },
                 },
             } as any);
 
@@ -210,6 +225,52 @@ describe("ReplenishmentService", () => {
                 resultDate!.getTime() - expectedDate.getTime(),
             );
             expect(diff).toBeLessThan(1000 * 60);
+        });
+    });
+
+    describe("triggerReplenishmentEvent", () => {
+        it("should trigger an event and update profile property", async () => {
+            const profileId = "profile-123";
+            const email = "test@example.com";
+            const productId = "VS-001";
+            const date = new Date("2026-02-15");
+            const dateStr = "2026-02-15";
+
+            mockProfilesApi.getProfiles.mockResolvedValue({
+                body: { data: [{ id: profileId }] },
+            } as any);
+
+            mockProfilesApi.updateProfile.mockResolvedValue({} as any);
+            mockEventsApi.createEvent.mockResolvedValue({} as any);
+
+            await service.triggerReplenishmentEvent(email, productId, date);
+
+            expect(mockEventsApi.createEvent).toHaveBeenCalledWith(
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        attributes: expect.objectContaining({
+                            properties: expect.objectContaining({
+                                product_id: productId,
+                                replenishment_date: dateStr,
+                            }),
+                        }),
+                    }),
+                }),
+            );
+
+            expect(mockProfilesApi.updateProfile).toHaveBeenCalledWith(
+                profileId,
+                expect.objectContaining({
+                    data: expect.objectContaining({
+                        id: profileId,
+                        attributes: {
+                            properties: {
+                                [`replenishment_date_${productId}`]: dateStr,
+                            },
+                        },
+                    }),
+                }),
+            );
         });
     });
 });
