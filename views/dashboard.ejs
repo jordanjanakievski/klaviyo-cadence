@@ -15,14 +15,14 @@
     </style>
 </head>
 <body>
-    <h1>Merchant Command Center</h1>
+    <h1>Cadence Command Center</h1>
 
     <% if (successMessage) { %>
         <div class="success"><%= successMessage %></div>
     <% } %>
 
     <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>Upcoming Replenishments (Next 60 Days)</h2>
+        <h2>Upcoming Order Predictions (Next 2 Months)</h2>
         <div style="display: flex; gap: 10px; align-items: center;">
             <select id="productFilter" onchange="filterTable()" style="padding: 10px; border-radius: 4px; border: 1px solid #ccc;">
                 <option value="all">Select a Product...</option>

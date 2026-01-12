@@ -163,14 +163,13 @@ export class ReplenishmentService {
                                 },
                             },
                         },
-                        profile: {
-                            data: {
-                                type: "profile",
-                                id: profileId,
-                                attributes: {},
-                            },
-                        },
-                    },
+                                                    profile: {
+                                                        data: {
+                                                            type: "profile",
+                                                            id: profileId,
+                                                            attributes: {}
+                                                        },
+                                                    },                    },
                 },
             });
             console.log(
